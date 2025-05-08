@@ -1,0 +1,81 @@
+---
+title: "Análisis de datos demográficos de paises"
+author: "Sundury"
+format: html
+lang: es
+toc: true
+theme: vapor
+---
+
+# Carga de bibliotecas
+
+```{r}
+#| label: carga-bibliotecas
+#| warning: false
+#| message: false
+#| code-fold: true
+
+library(tidyverse)
+
+library(scales)
+
+library(ggthemes)
+
+library(hrbrthemes)
+
+library(plotly)
+```
+
+
+# Carga de datos
+
+```{r}
+#| label: carga-datos
+#| warning: false
+#| message: false
+#| code-fold: true
+
+# Carga de los datos de países
+paises <- read_csv(
+  "https://raw.githubusercontent.com/gf0604-procesamientodatosgeograficos/2025-i/refs/heads/main/datos/natural-earth/paises.csv"
+)
+```
+# Introducción
+
+Este documento contiene visualizaciones de datos socioeconómicos de países y territorios.
+
+# Relación entre PIB per cápita y esperanza de vida al nacer
+
+```{r}
+#| label: relacion-pib-ev
+#| warning: false
+#| message: false
+#| code-fold: true
+
+# Gráfico de dispersión de PIB per cápita vs esperanza de vida al nacer
+
+grafico_ggplot2 <-
+paises |>
+  ggplot(aes(x = GDP_PC, y = LIFE_EXPECTANCY, color = CONTINENT)) +
+   geom_point(aes(
+    # datos que se muestran al colocar el ratón sobre un punto
+    text = paste0(
+      "PIB per cápita:", GDP_PC, "\n",
+      "Eperanza de vida:", LIFE_EXPECTANCY, "\n",
+      "País:", NAME
+    )
+   )) +
+  scale_x_continuous(labels = comma, limits = c(0, NA)) +
+  ggtitle("PIB per cápita vs esperanza de vida al nacer") +
+  xlab("PIB per cápita (USD)") +
+  ylab("Esperanza de vida al nacer (años)") +
+  labs(
+    color = "Continente",
+    subtitle = "Datos de todo el mundo",
+    caption = "Fuentes: Natural Earth y Banco Mundial"
+  ) +
+  theme_ipsum()
+
+ggplotly(grafico_ggplot2, tootip = "text") |>
+  config(locale ='es')
+```
